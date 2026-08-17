@@ -113,7 +113,7 @@
     "@eslint/js": "^10.0.1",
     "@nestjs/cli": "^11.0.24",
     "@nestjs/schematics": "^11.0.0",
-    "@nestjs/testing": "^11.1.29",
+    "@nestjs/testing": "^11.2.0",
     "@types/archiver": "^8.0.0",
     "@types/dockerode": "^4.0.1",
     "@types/express": "^5.0.0",
