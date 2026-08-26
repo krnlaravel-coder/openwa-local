@@ -1,0 +1,152 @@
+# Complete OpenWA API Documentation & Usage Guide
+
+This document lists the most important API endpoints available in OpenWA, what they do, and how to use them in your own application.
+
+---
+
+## 1. Global Requirements
+Every API request MUST include your API key and set the content type.
+
+**Headers:**
+```http
+x-api-key: owa_k1_65773c7ed4145c829caa28030ef72d0f37ce4417d30c87f022da1ed351d067e2
+Content-Type: application/json
+```
+
+**Formatting Chat IDs:**
+- **Individuals:** Number + `@c.us` (e.g., `919512446126@c.us`)
+- **Groups:** Group Number + `@g.us` (e.g., `1203630283456789@g.us`)
+
+---
+
+## 2. Session Management API
+Use these APIs to create and manage the background WhatsApp browser sessions without needing the dashboard.
+
+### Create a Session
+Creates a new session slot in the database.
+*   **Method:** `POST /api/sessions`
+*   **Body:** `{"name": "my-session-name"}`
+*   **Returns:** A Session object containing your new `{sessionId}`.
+
+### Start a Session
+Boots up the background browser for a session.
+*   **Method:** `POST /api/sessions/{sessionId}/start`
+*   **Body:** *(Empty)*
+
+### Get QR Code
+Fetches the raw QR string to render on your own app's screen so the user can scan it.
+*   **Method:** `GET /api/sessions/{sessionId}/qr`
+*   **Returns:** `{"qr": "2@XyZ..."}`
+
+### Check Session Status
+Checks if the session is currently authenticated and ready to send messages.
+*   **Method:** `GET /api/sessions/{sessionId}/status`
+
+### Stop a Session
+Safely turns off the background browser for a session.
+*   **Method:** `POST /api/sessions/{sessionId}/stop`
+*   **Body:** *(Empty)*
+
+### Logout Session
+Unlinks the device from WhatsApp (forces the user to scan a new QR code next time).
+*   **Method:** `POST /api/sessions/{sessionId}/logout`
+*   **Body:** *(Empty)*
+
+---
+
+## 3. Messaging API
+Use these APIs to send different types of messages once your session is `READY`.
+
+### Send a Text Message
+*   **Method:** `POST /api/sessions/{sessionId}/messages/send-text`
+*   **Body:**
+```json
+{
+  "chatId": "919512446126@c.us",
+  "text": "Hello world!"
+}
+```
+
+### Send an Image
+*   **Method:** `POST /api/sessions/{sessionId}/messages/send-image`
+*   **Body:**
+```json
+{
+  "chatId": "919512446126@c.us",
+  "file": {
+    "url": "https://example.com/image.jpg"
+  },
+  "caption": "Look at this image!"
+}
+```
+
+### Send a Video
+*   **Method:** `POST /api/sessions/{sessionId}/messages/send-video`
+*   **Body:**
+```json
+{
+  "chatId": "919512446126@c.us",
+  "file": {
+    "url": "https://example.com/video.mp4"
+  },
+  "caption": "Watch this video!"
+}
+```
+
+### Send a Document / PDF
+*   **Method:** `POST /api/sessions/{sessionId}/messages/send-document`
+*   **Body:**
+```json
+{
+  "chatId": "919512446126@c.us",
+  "file": {
+    "url": "https://example.com/invoice.pdf"
+  },
+  "fileName": "Invoice_Aug2026.pdf"
+}
+```
+
+### Send a Location
+*   **Method:** `POST /api/sessions/{sessionId}/messages/send-location`
+*   **Body:**
+```json
+{
+  "chatId": "919512446126@c.us",
+  "latitude": 37.7749,
+  "longitude": -122.4194,
+  "name": "Golden Gate Bridge"
+}
+```
+
+---
+
+## 4. Contacts & Groups API
+
+### Check if a number is on WhatsApp
+Verifies if a phone number actually has a registered WhatsApp account.
+*   **Method:** `GET /api/sessions/{sessionId}/contacts/check/{number}`
+*   *(Note: Put the raw number with country code in the URL, e.g., `/check/919512446126`)*
+
+### Get all Contacts
+Fetches a list of all saved contacts from your phone.
+*   **Method:** `GET /api/sessions/{sessionId}/contacts`
+
+### Get all Groups
+Fetches a list of all groups you are a participant in.
+*   **Method:** `GET /api/sessions/{sessionId}/groups`
+
+### Create a Group
+Creates a brand new WhatsApp group.
+*   **Method:** `POST /api/sessions/{sessionId}/groups`
+*   **Body:**
+```json
+{
+  "title": "My New C# Group",
+  "participants": ["919512446126@c.us"]
+}
+```
+
+### Leave a Group
+Leaves an existing group.
+*   **Method:** `POST /api/sessions/{sessionId}/groups/{groupId}/leave`
+*   **Body:** *(Empty)*

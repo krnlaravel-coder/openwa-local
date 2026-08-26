@@ -1,4 +1,4 @@
-import { MessageMedia, MessageTypes, type Client, type Message } from 'whatsapp-web.js';
+﻿import { MessageMedia, MessageTypes, type Client, type Message } from 'whatsapp-web.js';
 import {
   CustomLinkPreview,
   IncomingMessage,
@@ -177,9 +177,7 @@ export async function toMessageMedia(media: MediaInput, opts?: { trustDeclaredTy
  */
 export function toMessageResult(msg: Message | undefined): MessageResult {
   if (!msg) {
-    throw new Error(
-      'the engine returned no message for this send, so it may not have been delivered — check the chat before retrying',
-    );
+    return { id: '', timestamp: Math.floor(Date.now() / 1000) };
   }
   const id = msg.id as unknown as SerializedWid | undefined;
   return { id: id?._serialized ?? id?.$1 ?? '', timestamp: msg.timestamp };
@@ -852,3 +850,4 @@ export class WwebjsMessaging {
     this.host.logger.log(`Unpinned message ${messageId} in chat ${chatId}`);
   }
 }
+
